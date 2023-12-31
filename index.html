@@ -1,10 +1,10 @@
 <script id="PRNG">
-  var Prng = new function() {
+  var Prng = new (function () {
     this.s = 1234;
     this.p = 999979; //9887//983
     this.q = 999983; //9967//991
     this.m = this.p * this.q;
-    this.hash = function(x) {
+    this.hash = function (x) {
       var y = window.btoa(JSON.stringify(x));
       var z = 0;
       for (var i = 0; i < y.length; i++) {
@@ -12,7 +12,7 @@
       }
       return z;
     };
-    this.seed = function(x) {
+    this.seed = function (x) {
       if (x == undefined) {
         x = new Date().getTime();
       }
@@ -26,19 +26,19 @@
         redo();
       }
       Prng.s = y;
-      console.log(["int seed", Prng.s]);
+      console.log(['int seed', Prng.s]);
       for (var i = 0; i < 10; i++) {
         Prng.next();
       }
     };
-    this.next = function() {
+    this.next = function () {
       Prng.s = (Prng.s * Prng.s) % Prng.m;
       return Prng.s / Prng.m;
     };
-    this.test = function(f) {
+    this.test = function (f) {
       var F =
         f ||
-        function() {
+        function () {
           return Prng.next();
         };
       var t0 = new Date().getTime();
@@ -47,27 +47,27 @@
         chart[Math.floor(F() * 10)] += 1;
       }
       console.log(chart);
-      console.log("finished in " + (new Date().getTime() - t0));
+      console.log('finished in ' + (new Date().getTime() - t0));
       return chart;
     };
-  }();
-  Math.random = function() {
+  })();
+  Math.random = function () {
     return Prng.next();
   };
-  Math.seed = function(x) {
+  Math.seed = function (x) {
     return Prng.seed(x);
   };
 </script>
 
 <script>
   function parseArgs(key2f) {
-    var par = window.location.href.split("?")[1];
+    var par = window.location.href.split('?')[1];
     if (par == undefined) {
       return;
     }
-    par = par.split("&");
+    par = par.split('&');
     for (var i = 0; i < par.length; i++) {
-      var e = par[i].split("=");
+      var e = par[i].split('=');
       try {
         key2f[e[0]](e[1]);
       } catch (e) {
@@ -75,10 +75,10 @@
       }
     }
   }
-  SEED = "" + new Date().getTime();
+  SEED = '' + new Date().getTime();
   parseArgs({
-    seed: function(x) {
-      SEED = x == "" ? SEED : x;
+    seed: function (x) {
+      SEED = x == '' ? SEED : x;
     },
   });
   Math.seed(SEED);
@@ -87,7 +87,7 @@
 
 <script id="PerlinNoise">
   //https://raw.githubusercontent.com/processing/p5.js/master/src/math/noise.js
-  var Noise = new function() {
+  var Noise = new (function () {
     var PERLIN_YWRAPB = 4;
     var PERLIN_YWRAP = 1 << PERLIN_YWRAPB;
     var PERLIN_ZWRAPB = 8;
@@ -95,11 +95,11 @@
     var PERLIN_SIZE = 4095;
     var perlin_octaves = 4;
     var perlin_amp_falloff = 0.5;
-    var scaled_cosine = function(i) {
+    var scaled_cosine = function (i) {
       return 0.5 * (1.0 - Math.cos(i * Math.PI));
     };
     var perlin;
-    this.noise = function(x, y, z) {
+    this.noise = function (x, y, z) {
       y = y || 0;
       z = z || 0;
       if (perlin == null) {
@@ -166,7 +166,7 @@
       }
       return r;
     };
-    this.noiseDetail = function(lod, falloff) {
+    this.noiseDetail = function (lod, falloff) {
       if (lod > 0) {
         perlin_octaves = lod;
       }
@@ -174,21 +174,21 @@
         perlin_amp_falloff = falloff;
       }
     };
-    this.noiseSeed = function(seed) {
-      var lcg = (function() {
+    this.noiseSeed = function (seed) {
+      var lcg = (function () {
         var m = 4294967296,
           a = 1664525,
           c = 1013904223,
           seed,
           z;
         return {
-          setSeed: function(val) {
+          setSeed: function (val) {
             z = seed = (val == null ? Math.random() * m : val) >>> 0;
           },
-          getSeed: function() {
+          getSeed: function () {
             return seed;
           },
-          rand: function() {
+          rand: function () {
             z = (a * z + c) % m;
             return z / m;
           },
@@ -200,16 +200,16 @@
         perlin[i] = lcg.rand();
       }
     };
-  }();
+  })();
 </script>
 
 <script id="PolyTools">
-  var PolyTools = new function() {
-    this.midPt = function() {
+  var PolyTools = new (function () {
+    this.midPt = function () {
       var plist =
         arguments.length == 1 ? arguments[0] : Array.apply(null, arguments);
       return plist.reduce(
-        function(acc, v) {
+        function (acc, v) {
           /*       if (v == undefined || acc == undefined){
         console.log("ERRR");
         console.log(plist)
@@ -217,10 +217,10 @@
       } */
           return [v[0] / plist.length + acc[0], v[1] / plist.length + acc[1]];
         },
-        [0, 0],
+        [0, 0]
       );
     };
-    this.triangulate = function(plist, args) {
+    this.triangulate = function (plist, args) {
       //return []
       var args = args != undefined ? args : {};
       var area = args.area != undefined ? args.area : 100;
@@ -261,7 +261,7 @@
           var np = plist[i != plist.length - 1 ? i + 1 : 0];
           var sect = intersect(
             [plist[i], np],
-            [pt, [pt[0] + 999, pt[1] + 999]],
+            [pt, [pt[0] + 999, pt[1] + 999]]
           );
           if (sect != false) {
             scount++;
@@ -270,7 +270,10 @@
         return scount % 2 == 1;
       }
       function lnInPoly(ln, plist) {
-        var lnc = [[0, 0], [0, 0]];
+        var lnc = [
+          [0, 0],
+          [0, 0],
+        ];
         var ep = 0.01;
 
         lnc[0][0] = ln[0][0] * (1 - ep) + ln[1][0] * ep;
@@ -298,7 +301,7 @@
           var pt = plist[i];
           var np = plist[i != plist.length - 1 ? i + 1 : 0];
           var s = Math.sqrt(
-            Math.pow(np[0] - pt[0], 2) + Math.pow(np[1] - pt[1], 2),
+            Math.pow(np[0] - pt[0], 2) + Math.pow(np[1] - pt[1], 2)
           );
           slist.push(s);
         }
@@ -314,7 +317,7 @@
       }
       function sliverRatio(plist) {
         var A = areaOf(plist);
-        var P = sidesOf(plist).reduce(function(m, n) {
+        var P = sidesOf(plist).reduce(function (m, n) {
           return m + n;
         }, 0);
         return A / P;
@@ -354,7 +357,7 @@
           var slist = sidesOf(plist);
           var ind = slist.reduce(
             (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
-            0,
+            0
           );
           var nind = (ind + 1) % plist.length;
           var lind = (ind + 2) % plist.length;
@@ -366,7 +369,7 @@
             return [];
           }
           return shatter([plist[ind], mid, plist[lind]], a).concat(
-            shatter([plist[lind], plist[nind], mid], a),
+            shatter([plist[lind], plist[nind], mid], a)
           );
         }
       }
@@ -375,16 +378,16 @@
       } else {
         var cut = bestEar(plist);
         return shatter(cut[0], area).concat(
-          PolyTools.triangulate(cut[1], args),
+          PolyTools.triangulate(cut[1], args)
         );
       }
     };
-  }();
+  })();
 </script>
 
 <script id="Util">
   function unNan(plist) {
-    if (typeof plist != "object" || plist == null) {
+    if (typeof plist != 'object' || plist == null) {
       return plist || 0;
     } else {
       return plist.map(unNan);
@@ -434,7 +437,7 @@
 
   function randGaussian() {
     return (
-      wtrand(function(x) {
+      wtrand(function (x) {
         return Math.pow(Math.E, -24 * Math.pow(x - 0.5, 2));
       }) *
         2 -
@@ -486,24 +489,24 @@
     var args = args != undefined ? args : {};
     var xof = args.xof != undefined ? args.xof : 0;
     var yof = args.yof != undefined ? args.yof : 0;
-    var fil = args.fil != undefined ? args.fil : "rgba(0,0,0,0)";
+    var fil = args.fil != undefined ? args.fil : 'rgba(0,0,0,0)';
     var str = args.str != undefined ? args.str : fil;
     var wid = args.wid != undefined ? args.wid : 0;
 
     var canv = "<polyline points='";
     for (var i = 0; i < plist.length; i++) {
       canv +=
-        " " +
+        ' ' +
         (plist[i][0] + xof).toFixed(1) +
-        "," +
+        ',' +
         (plist[i][1] + yof).toFixed(1);
     }
     canv +=
       "' style='fill:" +
       fil +
-      ";stroke:" +
+      ';stroke:' +
       str +
-      ";stroke-width:" +
+      ';stroke-width:' +
       wid +
       "'/>";
     return canv;
@@ -511,25 +514,25 @@
 </script>
 
 <script>
-  console.log("************************************************");
+  console.log('************************************************');
 
   function stroke(ptlist, args) {
     var args = args != undefined ? args : {};
     var xof = args.xof != undefined ? args.xof : 0;
     var yof = args.yof != undefined ? args.yof : 0;
     var wid = args.wid != undefined ? args.wid : 2;
-    var col = args.col != undefined ? args.col : "rgba(200,200,200,0.9)";
+    var col = args.col != undefined ? args.col : 'rgba(200,200,200,0.9)';
     var noi = args.noi != undefined ? args.noi : 0.5;
     var out = args.out != undefined ? args.out : 1;
     var fun =
       args.fun != undefined
         ? args.fun
-        : function(x) {
+        : function (x) {
             return Math.sin(x * Math.PI);
           };
 
     if (ptlist.length == 0) {
-      return "";
+      return '';
     }
     vtxlist0 = [];
     vtxlist1 = [];
@@ -540,11 +543,11 @@
       w = w * (1 - noi) + w * noi * Noise.noise(i * 0.5, n0);
       var a1 = Math.atan2(
         ptlist[i][1] - ptlist[i - 1][1],
-        ptlist[i][0] - ptlist[i - 1][0],
+        ptlist[i][0] - ptlist[i - 1][0]
       );
       var a2 = Math.atan2(
         ptlist[i][1] - ptlist[i + 1][1],
-        ptlist[i][0] - ptlist[i + 1][0],
+        ptlist[i][0] - ptlist[i + 1][0]
       );
       var a = (a1 + a2) / 2;
       if (a < a2) {
@@ -562,15 +565,15 @@
 
     vtxlist = [ptlist[0]]
       .concat(
-        vtxlist0.concat(vtxlist1.concat([ptlist[ptlist.length - 1]]).reverse()),
+        vtxlist0.concat(vtxlist1.concat([ptlist[ptlist.length - 1]]).reverse())
       )
       .concat([ptlist[0]]);
 
     var canv = poly(
-      vtxlist.map(function(x) {
+      vtxlist.map(function (x) {
         return [x[0] + xof, x[1] + yof];
       }),
-      { fil: col, str: col, wid: out },
+      { fil: col, str: col, wid: out }
     );
     return canv;
   }
@@ -580,13 +583,13 @@
     var len = args.len != undefined ? args.len : 20;
     var wid = args.wid != undefined ? args.wid : 5;
     var ang = args.ang != undefined ? args.ang : 0;
-    var col = args.col != undefined ? args.col : "rgba(200,200,200,0.9)";
+    var col = args.col != undefined ? args.col : 'rgba(200,200,200,0.9)';
     var noi = args.noi != undefined ? args.noi : 0.5;
     var ret = args.ret != undefined ? args.ret : 0;
     var fun =
       args.fun != undefined
         ? args.fun
-        : function(x) {
+        : function (x) {
             return x <= 1
               ? Math.pow(Math.sin(x * Math.PI), 0.5)
               : -Math.pow(Math.sin((x + 1) * Math.PI), 0.5);
@@ -650,7 +653,7 @@
     return rlist;
   }
 
-  var texture = function(ptlist, args) {
+  var texture = function (ptlist, args) {
     var args = args != undefined ? args : {};
     var xof = args.xof != undefined ? args.xof : 0;
     var yof = args.yof != undefined ? args.yof : 0;
@@ -662,19 +665,19 @@
     var noi =
       args.noi != undefined
         ? args.noi
-        : function(x) {
+        : function (x) {
             return 30 / x;
           };
     var col =
       args.col != undefined
         ? args.col
-        : function(x) {
-            return "rgba(100,100,100," + (Math.random() * 0.3).toFixed(3) + ")";
+        : function (x) {
+            return 'rgba(100,100,100,' + (Math.random() * 0.3).toFixed(3) + ')';
           };
     var dis =
       args.dis != undefined
         ? args.dis
-        : function() {
+        : function () {
             if (Math.random() > 0.5) {
               return (1 / 3) * Math.random();
             } else {
@@ -716,36 +719,36 @@
         texlist[texlist.length - 1].push([x + ns[0], y + ns[1]]);
       }
     }
-    var canv = "";
+    var canv = '';
     //SHADE
     if (sha) {
       for (var j = 0; j < texlist.length; j += 1 + (sha != 0)) {
         canv += stroke(
-          texlist[j].map(function(x) {
+          texlist[j].map(function (x) {
             return [x[0] + xof, x[1] + yof];
           }),
-          { col: "rgba(100,100,100,0.1)", wid: sha },
+          { col: 'rgba(100,100,100,0.1)', wid: sha }
         );
       }
     }
     //TEXTURE
     for (var j = 0 + sha; j < texlist.length; j += 1 + sha) {
       canv += stroke(
-        texlist[j].map(function(x) {
+        texlist[j].map(function (x) {
           return [x[0] + xof, x[1] + yof];
         }),
-        { col: col(j / texlist.length), wid: wid },
+        { col: col(j / texlist.length), wid: wid }
       );
     }
     return ret ? texlist : canv;
   };
 
-  var Tree = new function() {
-    this.tree01 = function(x, y, args) {
+  var Tree = new (function () {
+    this.tree01 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 50;
       var wid = args.wid != undefined ? args.wid : 3;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
       reso = 10;
@@ -755,15 +758,12 @@
       }
 
       var leafcol;
-      if (col.includes("rgba(")) {
-        leafcol = col
-          .replace("rgba(", "")
-          .replace(")", "")
-          .split(",");
+      if (col.includes('rgba(')) {
+        leafcol = col.replace('rgba(', '').replace(')', '').split(',');
       } else {
-        leafcol = ["100", "100", "100", "0.5"];
+        leafcol = ['100', '100', '100', '0.5'];
       }
-      var canv = "";
+      var canv = '';
       var line1 = [];
       var line2 = [];
       for (var i = 0; i < reso; i++) {
@@ -779,16 +779,16 @@
                 wid: Math.random() * 6 + 3,
                 ang: ((Math.random() - 0.5) * Math.PI) / 6,
                 col:
-                  "rgba(" +
+                  'rgba(' +
                   leafcol[0] +
-                  "," +
+                  ',' +
                   leafcol[1] +
-                  "," +
+                  ',' +
                   leafcol[2] +
-                  "," +
+                  ',' +
                   (Math.random() * 0.2 + parseFloat(leafcol[3])).toFixed(1) +
-                  ")",
-              },
+                  ')',
+              }
             );
           }
         }
@@ -796,37 +796,34 @@
         line2.push([nx + (nslist[i][1] - 0.5) * wid + wid / 2, ny]);
       }
       canv +=
-        poly(line1, { fil: "none", str: col, wid: 1.5 }) +
-        poly(line2, { fil: "none", str: col, wid: 1.5 });
+        poly(line1, { fil: 'none', str: col, wid: 1.5 }) +
+        poly(line2, { fil: 'none', str: col, wid: 1.5 });
       return canv;
     };
-    this.tree02 = function(x, y, args) {
+    this.tree02 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 16;
       var wid = args.wid != undefined ? args.wid : 8;
       var clu = args.clu != undefined ? args.clu : 5;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
       var leafcol;
-      if (col.includes("rgba(")) {
-        leafcol = col
-          .replace("rgba(", "")
-          .replace(")", "")
-          .split(",");
+      if (col.includes('rgba(')) {
+        leafcol = col.replace('rgba(', '').replace(')', '').split(',');
       } else {
-        leafcol = ["100", "100", "100", "0.5"];
+        leafcol = ['100', '100', '100', '0.5'];
       }
 
-      var canv = "";
+      var canv = '';
       for (var i = 0; i < clu; i++) {
         canv += blob(
           x + randGaussian() * clu * 4,
           y + randGaussian() * clu * 4,
           {
             ang: Math.PI / 2,
-            col: "rgba(100,100,100,0.8)",
-            fun: function(x) {
+            col: 'rgba(100,100,100,0.8)',
+            fun: function (x) {
               return x <= 1
                 ? Math.pow(Math.sin(x * Math.PI) * x, 0.5)
                 : -Math.pow(Math.sin((x - 2) * Math.PI * (x - 2)), 0.5);
@@ -834,22 +831,22 @@
             wid: Math.random() * wid * 0.75 + wid * 0.5,
             len: Math.random() * hei * 0.75 + hei * 0.5,
             col: col,
-          },
+          }
         );
       }
       return canv;
     };
-    this.tree03 = function(x, y, args) {
+    this.tree03 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 50;
       var wid = args.wid != undefined ? args.wid : 5;
       var ben =
         args.ben != undefined
           ? args.ben
-          : function(x) {
+          : function (x) {
               return 0;
             };
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
       reso = 10;
@@ -859,16 +856,13 @@
       }
 
       var leafcol;
-      if (col.includes("rgba(")) {
-        leafcol = col
-          .replace("rgba(", "")
-          .replace(")", "")
-          .split(",");
+      if (col.includes('rgba(')) {
+        leafcol = col.replace('rgba(', '').replace(')', '').split(',');
       } else {
-        leafcol = ["100", "100", "100", "0.5"];
+        leafcol = ['100', '100', '100', '0.5'];
       }
-      var canv = "";
-      var blobs = "";
+      var canv = '';
+      var blobs = '';
       var line1 = [];
       var line2 = [];
       for (var i = 0; i < reso; i++) {
@@ -876,7 +870,7 @@
         var ny = y - (i * hei) / reso;
         if (i >= reso / 5) {
           for (var j = 0; j < (reso - i) * 2; j++) {
-            var shape = function(x) {
+            var shape = function (x) {
               return Math.log(50 * x + 1) / 3.95;
             };
             var ox = Math.random() * wid * 2 * shape((reso - i) / reso);
@@ -888,16 +882,16 @@
                 wid: Math.random() * 6 + 3,
                 ang: ((Math.random() - 0.5) * Math.PI) / 6,
                 col:
-                  "rgba(" +
+                  'rgba(' +
                   leafcol[0] +
-                  "," +
+                  ',' +
                   leafcol[1] +
-                  "," +
+                  ',' +
                   leafcol[2] +
-                  "," +
+                  ',' +
                   (Math.random() * 0.2 + parseFloat(leafcol[3])).toFixed(3) +
-                  ")",
-              },
+                  ')',
+              }
             );
           }
         }
@@ -911,12 +905,12 @@
         ]);
       }
       var lc = line1.concat(line2.reverse());
-      canv += poly(lc, { fil: "white", str: col, wid: 1.5 });
+      canv += poly(lc, { fil: 'white', str: col, wid: 1.5 });
       canv += blobs;
       return canv;
     };
 
-    var branch = function(args) {
+    var branch = function (args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 300;
       var wid = args.wid != undefined ? args.wid : 6;
@@ -938,13 +932,13 @@
       }
       var ta = Math.atan2(
         tlist[tlist.length - 1][1],
-        tlist[tlist.length - 1][0],
+        tlist[tlist.length - 1][0]
       );
 
       for (var i = 0; i < tlist.length; i++) {
         var a = Math.atan2(tlist[i][1], tlist[i][0]);
         var d = Math.sqrt(
-          tlist[i][0] * tlist[i][0] + tlist[i][1] * tlist[i][1],
+          tlist[i][0] * tlist[i][0] + tlist[i][1] * tlist[i][1]
         );
         tlist[i][0] = d * Math.cos(a - ta + ang);
         tlist[i][1] = d * Math.sin(a - ta + ang);
@@ -988,7 +982,7 @@
       return [trlist1, trlist2];
     };
 
-    var twig = function(tx, ty, dep, args) {
+    var twig = function (tx, ty, dep, args) {
       var args = args != undefined ? args : {};
       var dir = args.dir != undefined ? args.dir : 1;
       var sca = args.sca != undefined ? args.sca : 1;
@@ -996,14 +990,14 @@
       var ang = args.ang != undefined ? args.ang : 0;
       var lea = args.lea != undefined ? args.lea : [true, 12];
 
-      var canv = "";
+      var canv = '';
       var twlist = [];
       var tl = 10;
       var hs = Math.random() * 0.5 + 0.5;
-      var fun1 = function(x) {
+      var fun1 = function (x) {
         return Math.pow(x, 0.5);
       };
-      var fun2 = function(x) {
+      var fun2 = function (x) {
         return -1 / Math.pow(i / tl + 1, 5) + 1;
       };
 
@@ -1040,38 +1034,38 @@
                 len: (15 + 12 * Math.random()) * wid,
                 ang:
                   ang / 2 + Math.PI / 2 + Math.PI * 0.2 * (Math.random() - 0.5),
-                col: "rgba(100,100,100," + (0.5 + dep * 0.2).toFixed(3) + ")",
-                fun: function(x) {
+                col: 'rgba(100,100,100,' + (0.5 + dep * 0.2).toFixed(3) + ')',
+                fun: function (x) {
                   return x <= 1
                     ? Math.pow(Math.sin(x * Math.PI) * x, 0.5)
                     : -Math.pow(Math.sin((x - 2) * Math.PI * (x - 2)), 0.5);
                 },
-              },
+              }
             );
           }
         }
       }
       canv += stroke(twlist, {
         wid: 1,
-        fun: function(x) {
+        fun: function (x) {
           return Math.cos((x * Math.PI) / 2);
         },
-        col: "rgba(100,100,100,0.5)",
+        col: 'rgba(100,100,100,0.5)',
       });
       return canv;
     };
 
-    var barkify = function(x, y, trlist) {
+    var barkify = function (x, y, trlist) {
       function bark(x, y, wid, ang) {
         var len = 10 + 10 * Math.random();
         var noi = 0.5;
-        var fun = function(x) {
+        var fun = function (x) {
           return x <= 1
             ? Math.pow(Math.sin(x * Math.PI), 0.5)
             : -Math.pow(Math.sin((x + 1) * Math.PI), 0.5);
         };
         var reso = 20.0;
-        var canv = "";
+        var canv = '';
 
         var lalist = [];
         for (var i = 0; i < reso + 1; i++) {
@@ -1100,25 +1094,25 @@
         canv += stroke(brklist, {
           wid: 0.8,
           noi: 0,
-          col: "rgba(100,100,100,0.4)",
+          col: 'rgba(100,100,100,0.4)',
           out: 0,
-          fun: function(x) {
+          fun: function (x) {
             return Math.sin((x + fr) * Math.PI * 3);
           },
         });
 
         return canv;
       }
-      var canv = "";
+      var canv = '';
 
       for (var i = 2; i < trlist[0].length - 1; i++) {
         var a0 = Math.atan2(
           trlist[0][i][1] - trlist[0][i - 1][1],
-          trlist[0][i][0] - trlist[0][i - 1][0],
+          trlist[0][i][0] - trlist[0][i - 1][0]
         );
         var a1 = Math.atan2(
           trlist[1][i][1] - trlist[1][i - 1][1],
-          trlist[1][i][0] - trlist[1][i - 1][0],
+          trlist[1][i][0] - trlist[1][i - 1][0]
         );
         var p = Math.random();
         var nx = trlist[0][i][0] * (1 - p) + trlist[1][i][0] * p;
@@ -1129,14 +1123,14 @@
             len: 15,
             wid: 6 - Math.abs(p - 0.5) * 10,
             ang: (a0 + a1) / 2,
-            col: "rgba(100,100,100,0.6)",
+            col: 'rgba(100,100,100,0.6)',
           });
         } else {
           canv += bark(
             nx + x,
             ny + y,
             5 - Math.abs(p - 0.5) * 10,
-            (a0 + a1) / 2,
+            (a0 + a1) / 2
           );
         }
 
@@ -1154,8 +1148,8 @@
                 wid: 4,
                 len: 4 + 6 * Math.random(),
                 ang: a0 + Math.PI / 2,
-                col: "rgba(100,100,100,0.6)",
-              },
+                col: 'rgba(100,100,100,0.6)',
+              }
             );
           }
         }
@@ -1179,25 +1173,25 @@
             (Noise.noise(i, j * 0.1, 2) - 0.5) * (15 + 5 * randGaussian());
         }
         canv += stroke(
-          rglist[i].map(function(v) {
+          rglist[i].map(function (v) {
             return [v[0] + x, v[1] + y];
           }),
-          { wid: 1.5, col: "rgba(100,100,100,0.7)", out: 0 },
+          { wid: 1.5, col: 'rgba(100,100,100,0.7)', out: 0 }
         );
       }
       return canv;
     };
 
-    this.tree04 = function(x, y, args) {
+    this.tree04 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 300;
       var wid = args.wid != undefined ? args.wid : 6;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
-      var canv = "";
-      var txcanv = "";
-      var twcanv = "";
+      var canv = '';
+      var txcanv = '';
+      var twcanv = '';
 
       var trlist = branch({ hei: hei, wid: wid, ang: -Math.PI / 2 });
       txcanv += barkify(x, y, trlist);
@@ -1221,7 +1215,7 @@
 
           brlist[0].splice(0, 1);
           brlist[1].splice(0, 1);
-          var foff = function(v) {
+          var foff = function (v) {
             return [v[0] + trlist[i][0], v[1] + trlist[i][1]];
           };
           txcanv += barkify(x, y, [brlist[0].map(foff), brlist[1].map(foff)]);
@@ -1237,38 +1231,38 @@
                   ang: ba > -Math.PI / 2 ? ba : ba + Math.PI,
                   sca: (0.5 * hei) / 300,
                   dir: ba > -Math.PI / 2 ? 1 : -1,
-                },
+                }
               );
             }
           }
           brlist = brlist[0].concat(brlist[1].reverse());
           trmlist = trmlist.concat(
-            brlist.map(function(v) {
+            brlist.map(function (v) {
               return [v[0] + trlist[i][0], v[1] + trlist[i][1]];
-            }),
+            })
           );
         } else {
           trmlist.push(trlist[i]);
         }
       }
-      canv += poly(trmlist, { xof: x, yof: y, fil: "white", str: col, wid: 0 });
+      canv += poly(trmlist, { xof: x, yof: y, fil: 'white', str: col, wid: 0 });
 
       trmlist.splice(0, 1);
       trmlist.splice(trmlist.length - 1, 1);
       canv += stroke(
-        trmlist.map(function(v) {
+        trmlist.map(function (v) {
           return [v[0] + x, v[1] + y];
         }),
         {
           col:
-            "rgba(100,100,100," + (0.4 + Math.random() * 0.1).toFixed(3) + ")",
+            'rgba(100,100,100,' + (0.4 + Math.random() * 0.1).toFixed(3) + ')',
           wid: 2.5,
-          fun: function(x) {
+          fun: function (x) {
             return Math.sin(1);
           },
           noi: 0.9,
           out: 0,
-        },
+        }
       );
 
       canv += txcanv;
@@ -1276,16 +1270,16 @@
       return canv;
     };
 
-    this.tree05 = function(x, y, args) {
+    this.tree05 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 300;
       var wid = args.wid != undefined ? args.wid : 5;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
-      var canv = "";
-      var txcanv = "";
-      var twcanv = "";
+      var canv = '';
+      var txcanv = '';
+      var twcanv = '';
 
       var trlist = branch({ hei: hei, wid: wid, ang: -Math.PI / 2, ben: 0 });
       txcanv += barkify(x, y, trlist);
@@ -1314,7 +1308,7 @@
 
           brlist[0].splice(0, 1);
           brlist[1].splice(0, 1);
-          var foff = function(v) {
+          var foff = function (v) {
             return [v[0] + trlist[i][0], v[1] + trlist[i][1]];
           };
           //txcanv += barkify(x,y,[brlist[0].map(foff),brlist[1].map(foff)])
@@ -1331,39 +1325,39 @@
                   sca: (0.2 * hei) / 300,
                   dir: ba > -Math.PI / 2 ? 1 : -1,
                   lea: [true, 5],
-                },
+                }
               );
             }
           }
           brlist = brlist[0].concat(brlist[1].reverse());
           trmlist = trmlist.concat(
-            brlist.map(function(v) {
+            brlist.map(function (v) {
               return [v[0] + trlist[i][0], v[1] + trlist[i][1]];
-            }),
+            })
           );
         } else {
           trmlist.push(trlist[i]);
         }
       }
 
-      canv += poly(trmlist, { xof: x, yof: y, fil: "white", str: col, wid: 0 });
+      canv += poly(trmlist, { xof: x, yof: y, fil: 'white', str: col, wid: 0 });
 
       trmlist.splice(0, 1);
       trmlist.splice(trmlist.length - 1, 1);
       canv += stroke(
-        trmlist.map(function(v) {
+        trmlist.map(function (v) {
           return [v[0] + x, v[1] + y];
         }),
         {
           col:
-            "rgba(100,100,100," + (0.4 + Math.random() * 0.1).toFixed(3) + ")",
+            'rgba(100,100,100,' + (0.4 + Math.random() * 0.1).toFixed(3) + ')',
           wid: 2.5,
-          fun: function(x) {
+          fun: function (x) {
             return Math.sin(1);
           },
           noi: 0.9,
           out: 0,
-        },
+        }
       );
 
       canv += txcanv;
@@ -1371,16 +1365,16 @@
       return canv;
     };
 
-    this.tree06 = function(x, y, args) {
+    this.tree06 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 100;
       var wid = args.wid != undefined ? args.wid : 6;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
-      var canv = "";
-      var txcanv = "";
-      var twcanv = "";
+      var canv = '';
+      var txcanv = '';
+      var twcanv = '';
 
       function fracTree(xoff, yoff, dep, args) {
         var args = args != undefined ? args : {};
@@ -1424,7 +1418,7 @@
                 wid: wid * 0.6,
                 ang: ang + ba,
                 ben: 0.55,
-              },
+              }
             );
 
             for (var j = 0; j < brlist.length; j++) {
@@ -1438,15 +1432,15 @@
                     sca: 0.3,
                     dir: ba > 0 ? 1 : -1,
                     lea: [false, 0],
-                  },
+                  }
                 );
               }
             }
 
             trmlist = trmlist.concat(
-              brlist.map(function(v) {
+              brlist.map(function (v) {
                 return [v[0] + trlist[i][0], v[1] + trlist[i][1]];
-              }),
+              })
             );
           } else {
             trmlist.push(trlist[i]);
@@ -1462,24 +1456,24 @@
         ben: 0,
       });
 
-      canv += poly(trmlist, { xof: x, yof: y, fil: "white", str: col, wid: 0 });
+      canv += poly(trmlist, { xof: x, yof: y, fil: 'white', str: col, wid: 0 });
 
       trmlist.splice(0, 1);
       trmlist.splice(trmlist.length - 1, 1);
       canv += stroke(
-        trmlist.map(function(v) {
+        trmlist.map(function (v) {
           return [v[0] + x, v[1] + y];
         }),
         {
           col:
-            "rgba(100,100,100," + (0.4 + Math.random() * 0.1).toFixed(3) + ")",
+            'rgba(100,100,100,' + (0.4 + Math.random() * 0.1).toFixed(3) + ')',
           wid: 2.5,
-          fun: function(x) {
+          fun: function (x) {
             return Math.sin(1);
           },
           noi: 0.9,
           out: 0,
-        },
+        }
       );
 
       canv += txcanv;
@@ -1487,17 +1481,17 @@
       return canv;
     };
 
-    this.tree07 = function(x, y, args) {
+    this.tree07 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 60;
       var wid = args.wid != undefined ? args.wid : 4;
       var ben =
         args.ben != undefined
           ? args.ben
-          : function(x) {
+          : function (x) {
               return Math.sqrt(x) * 0.2;
             };
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,1)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,1)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
       reso = 10;
@@ -1506,15 +1500,12 @@
         nslist.push([Noise.noise(i * 0.5), Noise.noise(i * 0.5, 0.5)]);
       }
       var leafcol;
-      if (col.includes("rgba(")) {
-        leafcol = col
-          .replace("rgba(", "")
-          .replace(")", "")
-          .split(",");
+      if (col.includes('rgba(')) {
+        leafcol = col.replace('rgba(', '').replace(')', '').split(',');
       } else {
-        leafcol = ["100", "100", "100", "1"];
+        leafcol = ['100', '100', '100', '1'];
       }
-      var canv = "";
+      var canv = '';
       var line1 = [];
       var line2 = [];
       var T = [];
@@ -1531,22 +1522,22 @@
                 wid: Math.random() * 12 + 12,
                 ang: (-Math.random() * Math.PI) / 6,
                 col:
-                  "rgba(" +
+                  'rgba(' +
                   leafcol[0] +
-                  "," +
+                  ',' +
                   leafcol[1] +
-                  "," +
+                  ',' +
                   leafcol[2] +
-                  "," +
+                  ',' +
                   parseFloat(leafcol[3]).toFixed(3) +
-                  ")",
-                fun: function(x) {
+                  ')',
+                fun: function (x) {
                   return x <= 1
                     ? 2.75 * x * Math.pow(1 - x, 1 / 1.8)
                     : 2.75 * (x - 2) * Math.pow(x - 1, 1 / 1.8);
                 },
                 ret: 1,
-              },
+              }
             );
 
             //canv+=poly(bpl,{fil:col,wid:0})
@@ -1555,7 +1546,7 @@
                 area: 50,
                 convex: true,
                 optimize: false,
-              }),
+              })
             );
           }
         }
@@ -1573,22 +1564,22 @@
       for (var k = 0; k < T.length; k++) {
         var m = PolyTools.midPt(T[k]);
         var c = (Noise.noise(m[0] * 0.02, m[1] * 0.02) * 200 + 50) | 0;
-        var co = "rgba(" + c + "," + c + "," + c + ",0.8)";
+        var co = 'rgba(' + c + ',' + c + ',' + c + ',0.8)';
         canv += poly(T[k], { fil: co, str: co, wid: 0 });
       }
       return canv;
     };
 
-    this.tree08 = function(x, y, args) {
+    this.tree08 = function (x, y, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 80;
       var wid = args.wid != undefined ? args.wid : 1;
-      var col = args.col != undefined ? args.col : "rgba(100,100,100,0.5)";
+      var col = args.col != undefined ? args.col : 'rgba(100,100,100,0.5)';
       var noi = args.noi != undefined ? args.noi : 0.5;
 
-      var canv = "";
-      var txcanv = "";
-      var twcanv = "";
+      var canv = '';
+      var txcanv = '';
+      var twcanv = '';
 
       var ang = normRand(-1, 1) * Math.PI * 0.2;
 
@@ -1611,22 +1602,25 @@
 
         var fun =
           dep == 0
-            ? function(x) {
+            ? function (x) {
                 return Math.cos(0.5 * Math.PI * x);
               }
-            : function(x) {
+            : function (x) {
                 return 1;
               };
         var spt = [xoff, yoff];
         var ept = [xoff + Math.cos(ang) * len, yoff + Math.sin(ang) * len];
 
-        var trmlist = [[xoff, yoff], [xoff + len, yoff]];
+        var trmlist = [
+          [xoff, yoff],
+          [xoff + len, yoff],
+        ];
 
         var bfun = randChoice([
-          function(x) {
+          function (x) {
             return Math.sin(x * Math.PI);
           },
-          function(x) {
+          function (x) {
             return -Math.sin(x * Math.PI);
           },
         ]);
@@ -1643,11 +1637,11 @@
           trmlist[i][1] = spt[1] + d * Math.sin(a + ang);
         }
 
-        var tcanv = "";
+        var tcanv = '';
         tcanv += stroke(trmlist, {
           fun: fun,
           wid: 0.8,
-          col: "rgba(100,100,100,0.5)",
+          col: 'rgba(100,100,100,0.5)',
         });
         if (dep != 0) {
           var nben = ben + randChoice([-1, 1]) * Math.PI * 0.001 * dep * dep;
@@ -1689,7 +1683,7 @@
             x + trlist[i][0],
             y + trlist[i][1],
             Math.floor(4 * Math.random()),
-            { hei: 20, ang: -Math.PI / 2 - ang * Math.random() },
+            { hei: 20, ang: -Math.PI / 2 - ang * Math.random() }
           );
         } else if (i == Math.floor(trlist.length / 2)) {
           twcanv += fracTree(x + trlist[i][0], y + trlist[i][1], 3, {
@@ -1699,22 +1693,22 @@
         }
       }
 
-      canv += poly(trlist, { xof: x, yof: y, fil: "white", str: col, wid: 0 });
+      canv += poly(trlist, { xof: x, yof: y, fil: 'white', str: col, wid: 0 });
 
       canv += stroke(
-        trlist.map(function(v) {
+        trlist.map(function (v) {
           return [v[0] + x, v[1] + y];
         }),
         {
           col:
-            "rgba(100,100,100," + (0.6 + Math.random() * 0.1).toFixed(3) + ")",
+            'rgba(100,100,100,' + (0.6 + Math.random() * 0.1).toFixed(3) + ')',
           wid: 2.5,
-          fun: function(x) {
+          fun: function (x) {
             return Math.sin(1);
           },
           noi: 0.9,
           out: 0,
-        },
+        }
       );
 
       canv += txcanv;
@@ -1722,10 +1716,10 @@
       //console.log(canv)
       return canv;
     };
-  }();
+  })();
 
-  var Mount = new function() {
-    var foot = function(ptlist, args) {
+  var Mount = new (function () {
+    var foot = function (ptlist, args) {
       var args = args != undefined ? args : {};
       var xof = args.xof != undefined ? args.xof : 0;
       var yof = args.yof != undefined ? args.yof : 0;
@@ -1775,33 +1769,33 @@
           }
         }
       }
-      var canv = "";
+      var canv = '';
       for (var i = 0; i < ftlist.length; i++) {
         canv += poly(ftlist[i], {
           xof: xof,
           yof: yof,
-          fil: "white",
-          str: "none",
+          fil: 'white',
+          str: 'none',
         });
       }
       for (var j = 0; j < ftlist.length; j++) {
         canv += stroke(
-          ftlist[j].map(function(x) {
+          ftlist[j].map(function (x) {
             return [x[0] + xof, x[1] + yof];
           }),
           {
             col:
-              "rgba(100,100,100," +
+              'rgba(100,100,100,' +
               (0.1 + Math.random() * 0.1).toFixed(3) +
-              ")",
+              ')',
             wid: 1,
-          },
+          }
         );
       }
       return ret ? ftlist : canv;
     };
 
-    this.mountain = function(xoff, yoff, seed, args) {
+    this.mountain = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 100 + Math.random() * 400;
       var wid = args.wid != undefined ? args.wid : 400 + Math.random() * 200;
@@ -1812,7 +1806,7 @@
 
       seed = seed != undefined ? seed : 0;
 
-      var canv = "";
+      var canv = '';
 
       var ptlist = [];
       var h = hei;
@@ -1852,39 +1846,39 @@
       }
       //RIM
       vegetate(
-        function(x, y) {
+        function (x, y) {
           return Tree.tree02(x + xoff, y + yoff - 5, {
             col:
-              "rgba(100,100,100," +
+              'rgba(100,100,100,' +
               (Noise.noise(0.01 * x, 0.01 * y) * 0.5 * 0.3 + 0.5).toFixed(3) +
-              ")",
+              ')',
             clu: 2,
           });
         },
-        function(i, j) {
+        function (i, j) {
           var ns = Noise.noise(j * 0.1, seed);
           return (
             i == 0 && ns * ns * ns < 0.1 && Math.abs(ptlist[i][j][1]) / h > 0.2
           );
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
 
       //WHITE BG
       canv += poly(ptlist[0].concat([[0, reso[0] * 4]]), {
         xof: xoff,
         yof: yoff,
-        fil: "white",
-        str: "none",
+        fil: 'white',
+        str: 'none',
       });
       //OUTLINE
       canv += stroke(
-        ptlist[0].map(function(x) {
+        ptlist[0].map(function (x) {
           return [x[0] + xoff, x[1] + yoff];
         }),
-        { col: "rgba(100,100,100,0.3)", noi: 1, wid: 3 },
+        { col: 'rgba(100,100,100,0.3)', noi: 1, wid: 3 }
       );
 
       canv += foot(ptlist, { xof: xoff, yof: yoff });
@@ -1898,39 +1892,39 @@
 
       //TOP
       vegetate(
-        function(x, y) {
+        function (x, y) {
           return Tree.tree02(x + xoff, y + yoff, {
             col:
-              "rgba(100,100,100," +
+              'rgba(100,100,100,' +
               (Noise.noise(0.01 * x, 0.01 * y) * 0.5 * 0.3 + 0.5).toFixed(3) +
-              ")",
+              ')',
           });
         },
-        function(i, j) {
+        function (i, j) {
           var ns = Noise.noise(i * 0.1, j * 0.1, seed + 2);
           return ns * ns * ns < 0.1 && Math.abs(ptlist[i][j][1]) / h > 0.5;
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
 
       if (veg) {
         //MIDDLE
         vegetate(
-          function(x, y) {
+          function (x, y) {
             var ht = ((h + y) / h) * 70;
             ht = ht * 0.3 + Math.random() * ht * 0.7;
             return Tree.tree01(x + xoff, y + yoff, {
               hei: ht,
               wid: Math.random() * 3 + 1,
               col:
-                "rgba(100,100,100," +
+                'rgba(100,100,100,' +
                 (Noise.noise(0.01 * x, 0.01 * y) * 0.5 * 0.3 + 0.3).toFixed(3) +
-                ")",
+                ')',
             });
           },
-          function(i, j) {
+          function (i, j) {
             var ns = Noise.noise(i * 0.2, j * 0.05, seed);
             return (
               j % 2 &&
@@ -1938,7 +1932,7 @@
               Math.abs(ptlist[i][j][1]) / h < 0.3
             );
           },
-          function(veglist, i) {
+          function (veglist, i) {
             var counter = 0;
             for (var j = 0; j < veglist.length; j++) {
               if (
@@ -1954,42 +1948,42 @@
               }
             }
             return false;
-          },
+          }
         );
 
         //BOTTOM
         vegetate(
-          function(x, y) {
+          function (x, y) {
             var ht = ((h + y) / h) * 120;
             ht = ht * 0.5 + Math.random() * ht * 0.5;
             var bc = Math.random() * 0.1;
             var bp = 1;
             return Tree.tree03(x + xoff, y + yoff, {
               hei: ht,
-              ben: function(x) {
+              ben: function (x) {
                 return Math.pow(x * bc, bp);
               },
               col:
-                "rgba(100,100,100," +
+                'rgba(100,100,100,' +
                 (Noise.noise(0.01 * x, 0.01 * y) * 0.5 * 0.3 + 0.3).toFixed(3) +
-                ")",
+                ')',
             });
           },
-          function(i, j) {
+          function (i, j) {
             var ns = Noise.noise(i * 0.2, j * 0.05, seed);
             return (
               (j == 0 || j == ptlist[i].length - 1) && ns * ns * ns * ns < 0.012
             );
           },
-          function(veglist, i) {
+          function (veglist, i) {
             return true;
-          },
+          }
         );
       }
 
       //BOTT ARCH
       vegetate(
-        function(x, y) {
+        function (x, y) {
           var tt = randChoice([0, 0, 1, 1, 1, 2]);
           if (tt == 1) {
             return Arch.arch02(x + xoff, y + yoff, seed, {
@@ -2003,10 +1997,10 @@
               sto: randChoice([1, 1, 1, 2, 2]),
             });
           } else {
-            return "";
+            return '';
           }
         },
-        function(i, j) {
+        function (i, j) {
           var ns = Noise.noise(i * 0.2, j * 0.05, seed + 10);
           return (
             i != 0 &&
@@ -2014,36 +2008,36 @@
             ns * ns * ns * ns < 0.008
           );
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
       //TOP ARCH
       vegetate(
-        function(x, y) {
+        function (x, y) {
           return Arch.arch03(x + xoff, y + yoff, seed, {
             sto: randChoice([5, 7]),
             wid: 40 + Math.random() * 20,
           });
         },
-        function(i, j) {
+        function (i, j) {
           return (
             i == 1 &&
             Math.abs(j - ptlist[i].length / 2) < 1 &&
             Math.random() < 0.02
           );
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
 
       //TRANSM
       vegetate(
-        function(x, y) {
+        function (x, y) {
           return Arch.transmissionTower01(x + xoff, y + yoff, seed);
         },
-        function(i, j) {
+        function (i, j) {
           var ns = Noise.noise(i * 0.2, j * 0.05, seed + 20 * Math.PI);
           return (
             i % 2 == 0 &&
@@ -2051,26 +2045,26 @@
             ns * ns * ns * ns < 0.002
           );
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
 
       //BOTT ROCK
       vegetate(
-        function(x, y) {
+        function (x, y) {
           return Mount.rock(x + xoff, y + yoff, seed, {
             wid: 20 + Math.random() * 20,
             hei: 20 + Math.random() * 20,
             sha: 2,
           });
         },
-        function(i, j) {
+        function (i, j) {
           return (j == 0 || j == ptlist[i].length - 1) && Math.random() < 0.1;
         },
-        function(veglist, i) {
+        function (veglist, i) {
           return true;
-        },
+        }
       );
 
       if (ret == 0) {
@@ -2080,7 +2074,7 @@
       }
     };
 
-    this.flatMount = function(xoff, yoff, seed, args) {
+    this.flatMount = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 40 + Math.random() * 400;
       var wid = args.wid != undefined ? args.wid : 400 + Math.random() * 200;
@@ -2090,7 +2084,7 @@
 
       seed = seed != undefined ? seed : 0;
 
-      var canv = "";
+      var canv = '';
       var ptlist = [];
       var reso = [5, 50];
       var hoff = 0;
@@ -2115,7 +2109,7 @@
           } else {
             if (flat[flat.length - 1].length % 2 == 1) {
               flat[flat.length - 1].push(
-                ptlist[ptlist.length - 1][ptlist[ptlist.length - 1].length - 1],
+                ptlist[ptlist.length - 1][ptlist[ptlist.length - 1].length - 1]
               );
             }
           }
@@ -2128,15 +2122,15 @@
       canv += poly(ptlist[0].concat([[0, reso[0] * 4]]), {
         xof: xoff,
         yof: yoff,
-        fil: "white",
-        str: "none",
+        fil: 'white',
+        str: 'none',
       });
       //OUTLINE
       canv += stroke(
-        ptlist[0].map(function(x) {
+        ptlist[0].map(function (x) {
           return [x[0] + xoff, x[1] + yoff];
         }),
-        { col: "rgba(100,100,100,0.3)", noi: 1, wid: 3 },
+        { col: 'rgba(100,100,100,0.3)', noi: 1, wid: 3 }
       );
 
       //canv += foot(ptlist,{xof:xoff,yof:yoff})
@@ -2145,7 +2139,7 @@
         yof: yoff,
         tex: tex,
         wid: 2,
-        dis: function() {
+        dis: function () {
           if (Math.random() > 0.5) {
             return 0.1 + 0.4 * Math.random();
           } else {
@@ -2195,16 +2189,19 @@
       canv += poly(grlist, {
         xof: xoff,
         yof: yoff,
-        str: "none",
-        fil: "white",
+        str: 'none',
+        fil: 'white',
         wid: 2,
       });
-      canv += stroke(grlist.map(x => [x[0] + xoff, x[1] + yoff]), {
-        wid: 3,
-        col: "rgba(100,100,100,0.2)",
-      });
+      canv += stroke(
+        grlist.map((x) => [x[0] + xoff, x[1] + yoff]),
+        {
+          wid: 3,
+          col: 'rgba(100,100,100,0.2)',
+        }
+      );
 
-      var bound = function(plist) {
+      var bound = function (plist) {
         var xmin;
         var xmax;
         var ymin;
@@ -2231,8 +2228,8 @@
       return canv;
     };
 
-    this.flatDec = function(xoff, yoff, grbd) {
-      var canv = "";
+    this.flatDec = function (xoff, yoff, grbd) {
+      var canv = '';
 
       var tt = randChoice([0, 0, 1, 2, 3, 4]);
 
@@ -2245,7 +2242,7 @@
             wid: 10 + Math.random() * 20,
             hei: 10 + Math.random() * 20,
             sha: 2,
-          },
+          }
         );
       }
       for (var j = 0; j < randChoice([0, 0, 1, 2]); j++) {
@@ -2255,7 +2252,7 @@
           canv += Tree.tree08(
             xr + Math.min(Math.max(normRand(-30, 30), grbd.xmin), grbd.xmax),
             yr,
-            { hei: 60 + Math.random() * 40 },
+            { hei: 60 + Math.random() * 40 }
           );
         }
       }
@@ -2270,7 +2267,7 @@
               wid: 50 + Math.random() * 20,
               hei: 40 + Math.random() * 20,
               sha: 5,
-            },
+            }
           );
         }
       }
@@ -2283,7 +2280,7 @@
           canv += Tree.tree05(
             xoff + i + 20 * normRand(-1, 1),
             yoff + (grbd.ymin + grbd.ymax) / 2 + 20,
-            { hei: 100 + Math.random() * 200 },
+            { hei: 100 + Math.random() * 200 }
           );
         }
         for (var j = 0; j < Math.random() * 4; j++) {
@@ -2295,7 +2292,7 @@
               wid: 50 + Math.random() * 20,
               hei: 40 + Math.random() * 20,
               sha: 5,
-            },
+            }
           );
         }
       } else if (tt == 2) {
@@ -2308,7 +2305,7 @@
               xoff +
                 Math.max(
                   grbd.xmin,
-                  Math.min(grbd.xmax, xr + normRand(-50, 50)),
+                  Math.min(grbd.xmax, xr + normRand(-50, 50))
                 ),
               yoff + yr + normRand(-5, 5) + 20,
               j * i * Math.random() * 100,
@@ -2316,7 +2313,7 @@
                 wid: 50 + Math.random() * 20,
                 hei: 40 + Math.random() * 20,
                 sha: 5,
-              },
+              }
             );
           }
         }
@@ -2325,7 +2322,7 @@
           canv += Tree.tree06(
             xoff + normRand(grbd.xmin, grbd.xmax),
             yoff + (grbd.ymin + grbd.ymax) / 2,
-            { hei: 60 + Math.random() * 60 },
+            { hei: 60 + Math.random() * 60 }
           );
         }
       } else if (tt == 4) {
@@ -2337,7 +2334,7 @@
           canv += Tree.tree07(
             xoff + i + 20 * normRand(-1, 1),
             yoff + (grbd.ymin + grbd.ymax) / 2 + normRand(-1, 1) + 0,
-            { hei: normRand(40, 80) },
+            { hei: normRand(40, 80) }
           );
         }
       }
@@ -2345,7 +2342,7 @@
       for (var i = 0; i < 50 * Math.random(); i++) {
         canv += Tree.tree02(
           xoff + normRand(grbd.xmin, grbd.xmax),
-          yoff + normRand(grbd.ymin, grbd.ymax),
+          yoff + normRand(grbd.ymin, grbd.ymax)
         );
       }
 
@@ -2359,21 +2356,21 @@
             wid: normRand(160, 200),
             hei: normRand(80, 100),
             per: Math.random(),
-          },
+          }
         );
       }
 
       return canv;
     };
 
-    this.distMount = function(xoff, yoff, seed, args) {
+    this.distMount = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 300;
       var len = args.len != undefined ? args.len : 2000;
       var seg = args.seg != undefined ? args.seg : 5;
 
       seed = seed != undefined ? seed : 0;
-      var canv = "";
+      var canv = '';
       var span = 10;
 
       var ptlist = [];
@@ -2381,7 +2378,7 @@
       for (var i = 0; i < len / span / seg; i++) {
         ptlist.push([]);
         for (var j = 0; j < seg + 1; j++) {
-          var tran = function(k) {
+          var tran = function (k) {
             return [
               xoff + k * span,
               yoff -
@@ -2393,7 +2390,7 @@
           ptlist[ptlist.length - 1].push(tran(i * seg + j));
         }
         for (var j = 0; j < seg / 2 + 1; j++) {
-          var tran = function(k) {
+          var tran = function (k) {
             return [
               xoff + k * span,
               yoff +
@@ -2406,13 +2403,13 @@
         }
       }
       for (var i = 0; i < ptlist.length; i++) {
-        var getCol = function(x, y) {
+        var getCol = function (x, y) {
           var c = (Noise.noise(x * 0.02, y * 0.02, yoff) * 55 + 200) | 0;
-          return "rgb(" + c + "," + c + "," + c + ")";
+          return 'rgb(' + c + ',' + c + ',' + c + ')';
         };
         canv += poly(ptlist[i], {
           fil: getCol(...ptlist[i][ptlist[i].length - 1]),
-          str: "none",
+          str: 'none',
           wid: 1,
         });
 
@@ -2430,7 +2427,7 @@
       return canv;
     };
 
-    this.rock = function(xoff, yoff, seed, args) {
+    this.rock = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 80;
       var wid = args.wid != undefined ? args.wid : 100;
@@ -2440,7 +2437,7 @@
 
       seed = seed != undefined ? seed : 0;
 
-      var canv = "";
+      var canv = '';
 
       var reso = [10, 50];
       var ptlist = [];
@@ -2459,7 +2456,7 @@
           var l =
             (wid * hei) /
             Math.sqrt(
-              Math.pow(hei * Math.cos(a), 2) + Math.pow(wid * Math.sin(a), 2),
+              Math.pow(hei * Math.cos(a), 2) + Math.pow(wid * Math.sin(a), 2)
             );
 
           /*           var l = Math.sin(a)>0? Math.pow(Math.sin(a),0.1)*wid
@@ -2485,15 +2482,15 @@
       canv += poly(ptlist[0].concat([[0, 0]]), {
         xof: xoff,
         yof: yoff,
-        fil: "white",
-        str: "none",
+        fil: 'white',
+        str: 'none',
       });
       //OUTLINE
       canv += stroke(
-        ptlist[0].map(function(x) {
+        ptlist[0].map(function (x) {
           return [x[0] + xoff, x[1] + yoff];
         }),
-        { col: "rgba(100,100,100,0.3)", noi: 1, wid: 3 },
+        { col: 'rgba(100,100,100,0.3)', noi: 1, wid: 3 }
       );
       canv += texture(ptlist, {
         xof: xoff,
@@ -2501,12 +2498,12 @@
         tex: tex,
         wid: 3,
         sha: sha,
-        col: function(x) {
+        col: function (x) {
           return (
-            "rgba(180,180,180," + (0.3 + Math.random() * 0.3).toFixed(3) + ")"
+            'rgba(180,180,180,' + (0.3 + Math.random() * 0.3).toFixed(3) + ')'
           );
         },
-        dis: function() {
+        dis: function () {
           if (Math.random() > 0.5) {
             return 0.15 + 0.15 * Math.random();
           } else {
@@ -2520,14 +2517,14 @@
       }
       return canv;
     };
-  }();
+  })();
 
-  var Arch = new function() {
-    var flip = function(ptlist, axis) {
+  var Arch = new (function () {
+    var flip = function (ptlist, axis) {
       axis = axis == undefined ? 0 : axis;
       for (var i = 0; i < ptlist.length; i++) {
         if (ptlist[i].length > 0) {
-          if (typeof ptlist[i][0] == "object") {
+          if (typeof ptlist[i][0] == 'object') {
             for (var j = 0; j < ptlist[i].length; j++) {
               ptlist[i][j][0] = axis - (ptlist[i][j][0] - axis);
             }
@@ -2539,7 +2536,7 @@
       return ptlist;
     };
 
-    var hut = function(xoff, yoff, args) {
+    var hut = function (xoff, yoff, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 40;
       var wid = args.wid != undefined ? args.wid : 180;
@@ -2558,25 +2555,25 @@
           ptlist[ptlist.length - 1].push([nx, ny]);
         }
       }
-      var canv = "";
+      var canv = '';
       canv += poly(
         ptlist[0]
           .slice(0, -1)
           .concat(ptlist[ptlist.length - 1].slice(0, -1).reverse()),
-        { xof: xoff, yof: yoff, fil: "white", str: "none" },
+        { xof: xoff, yof: yoff, fil: 'white', str: 'none' }
       );
       canv += poly(ptlist[0], {
         xof: xoff,
         yof: yoff,
-        fil: "none",
-        str: "rgba(100,100,100,0.3)",
+        fil: 'none',
+        str: 'rgba(100,100,100,0.3)',
         wid: 2,
       });
       canv += poly(ptlist[ptlist.length - 1], {
         xof: xoff,
         yof: yoff,
-        fil: "none",
-        str: "rgba(100,100,100,0.3)",
+        fil: 'none',
+        str: 'rgba(100,100,100,0.3)',
         wid: 2,
       });
 
@@ -2586,15 +2583,15 @@
         tex: tex,
         wid: 1,
         len: 0.25,
-        col: function(x) {
+        col: function (x) {
           return (
-            "rgba(120,120,120," + (0.3 + Math.random() * 0.3).toFixed(3) + ")"
+            'rgba(120,120,120,' + (0.3 + Math.random() * 0.3).toFixed(3) + ')'
           );
         },
-        dis: function() {
-          return wtrand(a => a * a);
+        dis: function () {
+          return wtrand((a) => a * a);
         },
-        noi: function(x) {
+        noi: function (x) {
           return 5;
         },
       });
@@ -2606,7 +2603,7 @@
       return canv;
     };
 
-    var box = function(xoff, yoff, args) {
+    var box = function (xoff, yoff, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 20;
       var wid = args.wid != undefined ? args.wid : 120;
@@ -2618,26 +2615,90 @@
       var dec =
         args.dec != undefined
           ? args.dec
-          : function(a) {
+          : function (a) {
               return [];
             };
 
       var mid = -wid * 0.5 + wid * rot;
       var bmid = -wid * 0.5 + wid * (1 - rot);
       var ptlist = [];
-      ptlist.push(div([[-wid * 0.5, -hei], [-wid * 0.5, 0]], 5));
-      ptlist.push(div([[wid * 0.5, -hei], [wid * 0.5, 0]], 5));
+      ptlist.push(
+        div(
+          [
+            [-wid * 0.5, -hei],
+            [-wid * 0.5, 0],
+          ],
+          5
+        )
+      );
+      ptlist.push(
+        div(
+          [
+            [wid * 0.5, -hei],
+            [wid * 0.5, 0],
+          ],
+          5
+        )
+      );
       if (bot) {
-        ptlist.push(div([[-wid * 0.5, 0], [mid, per]], 5));
-        ptlist.push(div([[wid * 0.5, 0], [mid, per]], 5));
+        ptlist.push(
+          div(
+            [
+              [-wid * 0.5, 0],
+              [mid, per],
+            ],
+            5
+          )
+        );
+        ptlist.push(
+          div(
+            [
+              [wid * 0.5, 0],
+              [mid, per],
+            ],
+            5
+          )
+        );
       }
-      ptlist.push(div([[mid, -hei], [mid, per]], 5));
+      ptlist.push(
+        div(
+          [
+            [mid, -hei],
+            [mid, per],
+          ],
+          5
+        )
+      );
       if (tra) {
         if (bot) {
-          ptlist.push(div([[-wid * 0.5, 0], [bmid, -per]], 5));
-          ptlist.push(div([[wid * 0.5, 0], [bmid, -per]], 5));
+          ptlist.push(
+            div(
+              [
+                [-wid * 0.5, 0],
+                [bmid, -per],
+              ],
+              5
+            )
+          );
+          ptlist.push(
+            div(
+              [
+                [wid * 0.5, 0],
+                [bmid, -per],
+              ],
+              5
+            )
+          );
         }
-        ptlist.push(div([[bmid, -hei], [bmid, -per]], 5));
+        ptlist.push(
+          div(
+            [
+              [bmid, -hei],
+              [bmid, -per],
+            ],
+            5
+          )
+        );
       }
 
       var surf = (rot < 0.5) * 2 - 1;
@@ -2647,7 +2708,7 @@
           pur: [mid, -hei + per],
           pdl: [surf * wid * 0.5, 0],
           pdr: [mid, per],
-        }),
+        })
       );
 
       var polist = [
@@ -2658,35 +2719,35 @@
         [-wid * 0.5, 0],
       ];
 
-      var canv = "";
+      var canv = '';
       if (!tra) {
         canv += poly(polist, {
           xof: xoff,
           yof: yoff,
-          str: "none",
-          fil: "white",
+          str: 'none',
+          fil: 'white',
         });
       }
 
       for (var i = 0; i < ptlist.length; i++) {
         canv += stroke(
-          ptlist[i].map(function(x) {
+          ptlist[i].map(function (x) {
             return [x[0] + xoff, x[1] + yoff];
           }),
           {
-            col: "rgba(100,100,100,0.4)",
+            col: 'rgba(100,100,100,0.4)',
             noi: 1,
             wid: wei,
-            fun: function(x) {
+            fun: function (x) {
               return 1;
             },
-          },
+          }
         );
       }
       return canv;
     };
 
-    var deco = function(style, args) {
+    var deco = function (style, args) {
       var args = args != undefined ? args : {};
       var pul = args.pul != undefined ? args.pul : [0, 0];
       var pur = args.pur != undefined ? args.pur : [0, 100];
@@ -2750,7 +2811,7 @@
       return plist;
     };
 
-    var rail = function(xoff, yoff, seed, args) {
+    var rail = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 20;
       var wid = args.wid != undefined ? args.wid : 180;
@@ -2768,20 +2829,84 @@
       var ptlist = [];
 
       if (fro) {
-        ptlist.push(div([[-wid * 0.5, 0], [mid, per]], seg));
-        ptlist.push(div([[mid, per], [wid * 0.5, 0]], seg));
+        ptlist.push(
+          div(
+            [
+              [-wid * 0.5, 0],
+              [mid, per],
+            ],
+            seg
+          )
+        );
+        ptlist.push(
+          div(
+            [
+              [mid, per],
+              [wid * 0.5, 0],
+            ],
+            seg
+          )
+        );
       }
       if (tra) {
-        ptlist.push(div([[-wid * 0.5, 0], [bmid, -per]], seg));
-        ptlist.push(div([[bmid, -per], [wid * 0.5, 0]], seg));
+        ptlist.push(
+          div(
+            [
+              [-wid * 0.5, 0],
+              [bmid, -per],
+            ],
+            seg
+          )
+        );
+        ptlist.push(
+          div(
+            [
+              [bmid, -per],
+              [wid * 0.5, 0],
+            ],
+            seg
+          )
+        );
       }
       if (fro) {
-        ptlist.push(div([[-wid * 0.5, -hei], [mid, -hei + per]], seg));
-        ptlist.push(div([[mid, -hei + per], [wid * 0.5, -hei]], seg));
+        ptlist.push(
+          div(
+            [
+              [-wid * 0.5, -hei],
+              [mid, -hei + per],
+            ],
+            seg
+          )
+        );
+        ptlist.push(
+          div(
+            [
+              [mid, -hei + per],
+              [wid * 0.5, -hei],
+            ],
+            seg
+          )
+        );
       }
       if (tra) {
-        ptlist.push(div([[-wid * 0.5, -hei], [bmid, -hei - per]], seg));
-        ptlist.push(div([[bmid, -hei - per], [wid * 0.5, -hei]], seg));
+        ptlist.push(
+          div(
+            [
+              [-wid * 0.5, -hei],
+              [bmid, -hei - per],
+            ],
+            seg
+          )
+        );
+        ptlist.push(
+          div(
+            [
+              [bmid, -hei - per],
+              [wid * 0.5, -hei],
+            ],
+            seg
+          )
+        );
       }
       if (tra) {
         var open = Math.floor(Math.random() * ptlist.length);
@@ -2790,7 +2915,7 @@
           (open + ptlist.length) % ptlist.length
         ].slice(0, -1);
       }
-      var canv = "";
+      var canv = '';
 
       for (var i = 0; i < ptlist.length / 2; i++) {
         for (var j = 0; j < ptlist[i].length; j++) {
@@ -2806,14 +2931,14 @@
                 j % ptlist[(ptlist.length / 2 + i) % ptlist.length].length
               ],
             ],
-            2,
+            2
           );
           ln[0][0] += (Math.random() - 0.5) * hei * 0.5;
           canv += poly(ln, {
             xof: xoff,
             yof: yoff,
-            fil: "none",
-            str: "rgba(100,100,100,0.5)",
+            fil: 'none',
+            str: 'rgba(100,100,100,0.5)',
             wid: 2,
           });
         }
@@ -2821,23 +2946,23 @@
 
       for (var i = 0; i < ptlist.length; i++) {
         canv += stroke(
-          ptlist[i].map(function(x) {
+          ptlist[i].map(function (x) {
             return [x[0] + xoff, x[1] + yoff];
           }),
           {
-            col: "rgba(100,100,100,0.5)",
+            col: 'rgba(100,100,100,0.5)',
             noi: 0.5,
             wid: wei,
-            fun: function(x) {
+            fun: function (x) {
               return 1;
             },
-          },
+          }
         );
       }
       return canv;
     };
 
-    var roof = function(xoff, yoff, args) {
+    var roof = function (xoff, yoff, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 20;
       var wid = args.wid != undefined ? args.wid : 120;
@@ -2845,9 +2970,9 @@
       var per = args.per != undefined ? args.per : 4;
       var cor = args.cor != undefined ? args.cor : 5;
       var wei = args.wei != undefined ? args.wei : 3;
-      var pla = args.pla != undefined ? args.pla : [0, ""];
+      var pla = args.pla != undefined ? args.pla : [0, ''];
 
-      var opf = function(ptlist) {
+      var opf = function (ptlist) {
         if (rot < 0.5) {
           return flip(ptlist);
         } else {
@@ -2868,8 +2993,8 @@
             [-wid * 0.5 + quat * 0.5, -hei / 2 - per / 4],
             [-wid * 0.5 - cor, 0],
           ]),
-          5,
-        ),
+          5
+        )
       );
       ptlist.push(
         div(
@@ -2878,8 +3003,8 @@
             [(mid + quat + wid * 0.5) / 2, -hei / 2],
             [wid * 0.5 + cor, 0],
           ]),
-          5,
-        ),
+          5
+        )
       );
       ptlist.push(
         div(
@@ -2888,18 +3013,40 @@
             [mid + quat / 2, -hei / 2 + per / 2],
             [mid + cor, per],
           ]),
-          5,
-        ),
+          5
+        )
       );
-
-      ptlist.push(div(opf([[-wid * 0.5 - cor, 0], [mid + cor, per]]), 5));
-      ptlist.push(div(opf([[wid * 0.5 + cor, 0], [mid + cor, per]]), 5));
 
       ptlist.push(
-        div(opf([[-wid * 0.5 + quat, -hei - per / 2], [mid + quat, -hei]]), 5),
+        div(
+          opf([
+            [-wid * 0.5 - cor, 0],
+            [mid + cor, per],
+          ]),
+          5
+        )
+      );
+      ptlist.push(
+        div(
+          opf([
+            [wid * 0.5 + cor, 0],
+            [mid + cor, per],
+          ]),
+          5
+        )
       );
 
-      var canv = "";
+      ptlist.push(
+        div(
+          opf([
+            [-wid * 0.5 + quat, -hei - per / 2],
+            [mid + quat, -hei],
+          ]),
+          5
+        )
+      );
+
+      var canv = '';
 
       var polist = opf([
         [-wid * 0.5, 0],
@@ -2908,21 +3055,21 @@
         [wid * 0.5, 0],
         [mid, per],
       ]);
-      canv += poly(polist, { xof: xoff, yof: yoff, str: "none", fil: "white" });
+      canv += poly(polist, { xof: xoff, yof: yoff, str: 'none', fil: 'white' });
 
       for (var i = 0; i < ptlist.length; i++) {
         canv += stroke(
-          ptlist[i].map(function(x) {
+          ptlist[i].map(function (x) {
             return [x[0] + xoff, x[1] + yoff];
           }),
           {
-            col: "rgba(100,100,100,0.4)",
+            col: 'rgba(100,100,100,0.4)',
             noi: 1,
             wid: wei,
-            fun: function(x) {
+            fun: function (x) {
               return 1;
             },
-          },
+          }
         );
       }
 
@@ -2944,18 +3091,18 @@
           " style='fill:rgba(100,100,100,0.9)'" +
           " text-anchor='middle' transform='translate(" +
           (mp[0] + xoff) +
-          "," +
+          ',' +
           (mp[1] + yoff) +
-          ") rotate(" +
+          ') rotate(' +
           adeg +
           ")'>" +
           pla[1] +
-          "</text>";
+          '</text>';
       }
       return canv;
     };
 
-    var pagroof = function(xoff, yoff, args) {
+    var pagroof = function (xoff, yoff, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 20;
       var wid = args.wid != undefined ? args.wid : 120;
@@ -2967,7 +3114,7 @@
 
       var ptlist = [];
       var polist = [[0, -hei]];
-      var canv = "";
+      var canv = '';
       for (var i = 0; i < sid; i++) {
         var fx = wid * ((i * 1.0) / (sid - 1) - 0.5);
         var fy = per * (1 - Math.abs((i * 1.0) / (sid - 1) - 0.5) * 2);
@@ -2975,31 +3122,35 @@
         if (i > 0) {
           ptlist.push([ptlist[ptlist.length - 1][2], [fxx, fy]]);
         }
-        ptlist.push([[0, -hei], [fx * 0.5, (-hei + fy) * 0.5], [fxx, fy]]);
+        ptlist.push([
+          [0, -hei],
+          [fx * 0.5, (-hei + fy) * 0.5],
+          [fxx, fy],
+        ]);
         polist.push([fxx, fy]);
       }
 
-      canv += poly(polist, { xof: xoff, yof: yoff, str: "none", fil: "white" });
+      canv += poly(polist, { xof: xoff, yof: yoff, str: 'none', fil: 'white' });
       for (var i = 0; i < ptlist.length; i++) {
         canv += stroke(
-          div(ptlist[i], 5).map(function(x) {
+          div(ptlist[i], 5).map(function (x) {
             return [x[0] + xoff, x[1] + yoff];
           }),
           {
-            col: "rgba(100,100,100,0.4)",
+            col: 'rgba(100,100,100,0.4)',
             noi: 1,
             wid: wei,
-            fun: function(x) {
+            fun: function (x) {
               return 1;
             },
-          },
+          }
         );
       }
 
       return canv;
     };
 
-    this.arch01 = function(xoff, yoff, seed, args) {
+    this.arch01 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 70;
       var wid = args.wid != undefined ? args.wid : 180;
@@ -3012,7 +3163,7 @@
       var h0 = hei * p;
       var h1 = hei * (1 - p);
 
-      var canv = "";
+      var canv = '';
       canv += hut(xoff, yoff - hei, { hei: h0, wid: wid });
       canv += box(xoff, yoff, {
         hei: h1,
@@ -3058,7 +3209,7 @@
       return canv;
     };
 
-    this.arch02 = function(xoff, yoff, seed, args) {
+    this.arch02 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 10;
       var wid = args.wid != undefined ? args.wid : 50;
@@ -3069,7 +3220,7 @@
       var rai = args.rai != undefined ? args.rai : false;
 
       seed = seed != undefined ? seed : 0;
-      var canv = "";
+      var canv = '';
 
       var hoff = 0;
       for (var i = 0; i < sto; i++) {
@@ -3080,13 +3231,13 @@
           rot: rot,
           wei: 1.5,
           per: per,
-          dec: function(a) {
+          dec: function (a) {
             return deco(
               sty,
               Object.assign({}, a, {
                 hsp: [[], [1, 5], [1, 5], [1, 4]][sty],
                 vsp: [[], [1, 2], [1, 2], [1, 3]][sty],
-              }),
+              })
             );
           },
         });
@@ -3102,7 +3253,7 @@
           : [];
         var pla = undefined;
         if (sto == 1 && Math.random() < 1 / 3) {
-          pla = [1, "Pizza Hut"];
+          pla = [1, 'Pizza Hut'];
         }
         canv += roof(xoff, yoff - hoff - hei, {
           hei: hei,
@@ -3117,7 +3268,7 @@
       }
       return canv;
     };
-    this.arch03 = function(xoff, yoff, seed, args) {
+    this.arch03 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 10;
       var wid = args.wid != undefined ? args.wid : 50;
@@ -3126,7 +3277,7 @@
       var sto = args.sto != undefined ? args.sto : 7;
 
       seed = seed != undefined ? seed : 0;
-      var canv = "";
+      var canv = '';
 
       var hoff = 0;
       for (var i = 0; i < sto; i++) {
@@ -3137,7 +3288,7 @@
           rot: rot,
           wei: 1.5,
           per: per / 2,
-          dec: function(a) {
+          dec: function (a) {
             return deco(1, Object.assign({}, a, { hsp: [1, 4], vsp: [1, 2] }));
           },
         });
@@ -3161,7 +3312,7 @@
       }
       return canv;
     };
-    this.arch04 = function(xoff, yoff, seed, args) {
+    this.arch04 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 15;
       var wid = args.wid != undefined ? args.wid : 30;
@@ -3170,7 +3321,7 @@
       var sto = args.sto != undefined ? args.sto : 2;
 
       seed = seed != undefined ? seed : 0;
-      var canv = "";
+      var canv = '';
 
       var hoff = 0;
       for (var i = 0; i < sto; i++) {
@@ -3181,7 +3332,7 @@
           rot: rot,
           wei: 1.5,
           per: per / 2,
-          dec: function(a) {
+          dec: function (a) {
             return [];
           },
         });
@@ -3206,12 +3357,12 @@
       return canv;
     };
 
-    this.boat01 = function(xoff, yoff, seed, args) {
+    this.boat01 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var len = args.len != undefined ? args.len : 120;
       var sca = args.sca != undefined ? args.sca : 1;
       var fli = args.fli != undefined ? args.fli : false;
-      var canv = "";
+      var canv = '';
 
       var dir = fli ? -1 : 1;
       canv += Man.man(xoff + 20 * sca * dir, yoff, {
@@ -3224,10 +3375,10 @@
 
       var plist1 = [];
       var plist2 = [];
-      var fun1 = function(x) {
+      var fun1 = function (x) {
         return Math.pow(Math.sin(x * Math.PI), 0.5) * 7 * sca;
       };
-      var fun2 = function(x) {
+      var fun2 = function (x) {
         return Math.pow(Math.sin(x * Math.PI), 0.5) * 10 * sca;
       };
       for (var i = 0; i < len * sca; i += 5 * sca) {
@@ -3235,33 +3386,36 @@
         plist2.push([i * dir, fun2(i / len)]);
       }
       var plist = plist1.concat(plist2.reverse());
-      canv += poly(plist, { xof: xoff, yof: yoff, fil: "white" });
-      canv += stroke(plist.map(v => [xoff + v[0], yoff + v[1]]), {
-        wid: 1,
-        fun: function(x) {
-          return Math.sin(x * Math.PI * 2);
-        },
-        col: "rgba(100,100,100,0.4)",
-      });
+      canv += poly(plist, { xof: xoff, yof: yoff, fil: 'white' });
+      canv += stroke(
+        plist.map((v) => [xoff + v[0], yoff + v[1]]),
+        {
+          wid: 1,
+          fun: function (x) {
+            return Math.sin(x * Math.PI * 2);
+          },
+          col: 'rgba(100,100,100,0.4)',
+        }
+      );
 
       return canv;
     };
 
-    this.transmissionTower01 = function(xoff, yoff, seed, args) {
+    this.transmissionTower01 = function (xoff, yoff, seed, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 100;
       var wid = args.wid != undefined ? args.wid : 20;
 
-      var canv = "";
-      var toGlobal = function(v) {
+      var canv = '';
+      var toGlobal = function (v) {
         return [v[0] + xoff, v[1] + yoff];
       };
 
-      var quickstroke = function(pl) {
+      var quickstroke = function (pl) {
         return stroke(div(pl, 5).map(toGlobal), {
           wid: 1,
-          fun: x => 0.5,
-          col: "rgba(100,100,100,0.4)",
+          fun: (x) => 0.5,
+          col: 'rgba(100,100,100,0.4)',
         });
       };
 
@@ -3277,7 +3431,11 @@
       var p30 = [-wid * 0.5, 0];
       var p31 = [wid * 0.5, 0];
 
-      var bch = [[0.7, -0.85], [1, -0.675], [0.7, -0.5]];
+      var bch = [
+        [0.7, -0.85],
+        [1, -0.675],
+        [0.7, -0.5],
+      ];
 
       for (var i = 0; i < bch.length; i++) {
         canv += quickstroke([
@@ -3319,10 +3477,10 @@
 
       return canv;
     };
-  }();
+  })();
 
-  var Man = new function() {
-    var expand = function(ptlist, wfun) {
+  var Man = new (function () {
+    var expand = function (ptlist, wfun) {
       vtxlist0 = [];
       vtxlist1 = [];
       vtxlist = [];
@@ -3331,11 +3489,11 @@
         var w = wfun(i / ptlist.length);
         var a1 = Math.atan2(
           ptlist[i][1] - ptlist[i - 1][1],
-          ptlist[i][0] - ptlist[i - 1][0],
+          ptlist[i][0] - ptlist[i - 1][0]
         );
         var a2 = Math.atan2(
           ptlist[i][1] - ptlist[i + 1][1],
-          ptlist[i][0] - ptlist[i + 1][0],
+          ptlist[i][0] - ptlist[i + 1][0]
         );
         var a = (a1 + a2) / 2;
         if (a < a2) {
@@ -3357,7 +3515,7 @@
       var a1 =
         Math.atan2(
           ptlist[l][1] - ptlist[l - 1][1],
-          ptlist[l][0] - ptlist[l - 1][0],
+          ptlist[l][0] - ptlist[l - 1][0]
         ) -
         Math.PI / 2;
       var w0 = wfun(0);
@@ -3381,13 +3539,13 @@
       return [vtxlist0, vtxlist1];
     };
 
-    var tranpoly = function(p0, p1, ptlist) {
-      var plist = ptlist.map(function(v) {
+    var tranpoly = function (p0, p1, ptlist) {
+      var plist = ptlist.map(function (v) {
         return [-v[0], v[1]];
       });
       var ang = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]) - Math.PI / 2;
       var scl = distance(p0, p1);
-      var qlist = plist.map(function(v) {
+      var qlist = plist.map(function (v) {
         var d = distance(v, [0, 0]);
         var a = Math.atan2(v[1], v[0]);
         return [
@@ -3397,21 +3555,21 @@
       });
       return qlist;
     };
-    var flipper = function(plist) {
-      return plist.map(function(v) {
+    var flipper = function (plist) {
+      return plist.map(function (v) {
         return [-v[0], v[1]];
       });
     };
 
-    this.hat01 = function(p0, p1, args) {
+    this.hat01 = function (p0, p1, args) {
       var args = args != undefined ? args : {};
       var fli = args.fli != undefined ? args.fli : false;
 
-      var canv = "";
+      var canv = '';
       var seed = Math.random();
       var f = fli
         ? flipper
-        : function(x) {
+        : function (x) {
             return x;
           };
       //var plist = [[-0.5,0.5],[0.5,0.5],[0.5,1],[-0.5,2]]
@@ -3427,9 +3585,9 @@
             [-0.3, 1.15],
             [-0.55, 1],
             [-0.65, 0.5],
-          ]),
+          ])
         ),
-        { fil: "rgba(100,100,100,0.8)" },
+        { fil: 'rgba(100,100,100,0.8)' }
       );
 
       var qlist1 = [];
@@ -3440,23 +3598,23 @@
         ]);
       }
       canv += poly(tranpoly(p0, p1, f(qlist1)), {
-        str: "rgba(100,100,100,0.8)",
+        str: 'rgba(100,100,100,0.8)',
         wid: 1,
       });
 
       return canv;
     };
 
-    this.hat02 = function(p0, p1, args) {
+    this.hat02 = function (p0, p1, args) {
       var args = args != undefined ? args : {};
       var fli = args.fli != undefined ? args.fli : false;
 
-      var canv = "";
+      var canv = '';
       var seed = Math.random();
 
       var f = fli
         ? flipper
-        : function(x) {
+        : function (x) {
             return x;
           };
       // canv += poly(tranpoly(p0,p1,[
@@ -3477,22 +3635,22 @@
             [1.3, 0.6],
             [1.2, 0.5],
             [0.3, 0.5],
-          ]),
+          ])
         ),
-        { fil: "rgba(100,100,100,0.8)" },
+        { fil: 'rgba(100,100,100,0.8)' }
       );
       return canv;
     };
 
-    this.stick01 = function(p0, p1, args) {
+    this.stick01 = function (p0, p1, args) {
       var args = args != undefined ? args : {};
       var fli = args.fli != undefined ? args.fli : false;
 
-      var canv = "";
+      var canv = '';
       var seed = Math.random();
       var f = fli
         ? flipper
-        : function(x) {
+        : function (x) {
             return x;
           };
 
@@ -3505,7 +3663,7 @@
         ]);
       }
       canv += poly(tranpoly(p0, p1, f(qlist1)), {
-        str: "rgba(100,100,100,0.5)",
+        str: 'rgba(100,100,100,0.5)',
         wid: 1,
       });
 
@@ -3519,15 +3677,15 @@
     //      /3
     //     4
 
-    this.man = function(xoff, yoff, args) {
+    this.man = function (xoff, yoff, args) {
       var args = args != undefined ? args : {};
       var sca = args.sca != undefined ? args.sca : 0.5;
       var hat = args.hat != undefined ? args.hat : Man.hat01;
       var ite =
         args.ite != undefined
           ? args.ite
-          : function() {
-              return "";
+          : function () {
+              return '';
             };
       var fli = args.fli != undefined ? args.fli : true;
       var ang =
@@ -3547,14 +3705,14 @@
       var len =
         args.len != undefined ? args.len : [0, 30, 20, 30, 30, 30, 30, 30, 30];
 
-      len = len.map(function(v) {
+      len = len.map(function (v) {
         return v * sca;
       });
-      var canv = "";
+      var canv = '';
       var sct = {
         0: { 1: { 2: {}, 5: { 6: {} }, 7: { 8: {} } }, 3: { 4: {} } },
       };
-      var toGlobal = function(v) {
+      var toGlobal = function (v) {
         return [(fli ? -1 : 1) * v[0] + xoff, v[1] + yoff];
       };
 
@@ -3604,26 +3762,26 @@
         //canv += stroke(s.map(toGlobal))
       }
 
-      var cloth = function(plist, fun) {
-        var canv = "";
+      var cloth = function (plist, fun) {
+        var canv = '';
         var tlist = bezmh(plist, 2);
         var [tlist1, tlist2] = expand(tlist, fun);
         canv += poly(tlist1.concat(tlist2.reverse()).map(toGlobal), {
-          fil: "white",
+          fil: 'white',
         });
         canv += stroke(tlist1.map(toGlobal), {
           wid: 1,
-          col: "rgba(100,100,100,0.5)",
+          col: 'rgba(100,100,100,0.5)',
         });
         canv += stroke(tlist2.map(toGlobal), {
           wid: 1,
-          col: "rgba(100,100,100,0.6)",
+          col: 'rgba(100,100,100,0.6)',
         });
 
         return canv;
       };
 
-      var fsleeve = function(x) {
+      var fsleeve = function (x) {
         return (
           sca *
           8 *
@@ -3631,7 +3789,7 @@
             (1 - x) * 0.4)
         );
       };
-      var fbody = function(x) {
+      var fbody = function (x) {
         return (
           sca *
           11 *
@@ -3639,7 +3797,7 @@
             (1 - x) * 0.5)
         );
       };
-      var fhead = function(x) {
+      var fhead = function (x) {
         return sca * 7 * Math.pow(0.25 - Math.pow(x - 0.5, 2), 0.3);
       };
 
@@ -3655,21 +3813,21 @@
       hlist1.splice(0, Math.floor(hlist1.length * 0.1));
       hlist2.splice(0, Math.floor(hlist2.length * 0.95));
       canv += poly(hlist1.concat(hlist2.reverse()).map(toGlobal), {
-        fil: "rgba(100,100,100,0.6)",
+        fil: 'rgba(100,100,100,0.6)',
       });
 
       canv += hat(toGlobal(pts[1]), toGlobal(pts[2]), { fli: fli });
 
       return canv;
     };
-  }();
+  })();
 
   function water(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 2;
     var len = args.len != undefined ? args.len : 800;
     var clu = args.clu != undefined ? args.clu : 10;
-    var canv = "";
+    var canv = '';
 
     var ptlist = [];
     var yk = 0;
@@ -3689,14 +3847,14 @@
 
     for (var j = 1; j < ptlist.length; j += 1) {
       canv += stroke(
-        ptlist[j].map(function(x) {
+        ptlist[j].map(function (x) {
           return [x[0] + xoff, x[1] + yoff];
         }),
         {
           col:
-            "rgba(100,100,100," + (0.3 + Math.random() * 0.3).toFixed(3) + ")",
+            'rgba(100,100,100,' + (0.3 + Math.random() * 0.3).toFixed(3) + ')',
           wid: 1,
-        },
+        }
       );
     }
 
@@ -3726,23 +3884,23 @@
           return false;
         }
       }
-      console.log("+");
+      console.log('+');
       reg.push(r);
       return true;
     }
 
     var reg = [];
     var samp = 0.03;
-    var ns = function(x, y) {
+    var ns = function (x, y) {
       return Math.max(Noise.noise(x * samp) - 0.55, 0) * 2;
     };
-    var nns = function(x) {
+    var nns = function (x) {
       return 1 - Noise.noise(x * samp);
     };
-    var nnns = function(x, y) {
+    var nnns = function (x, y) {
       return Math.max(Noise.noise(x * samp * 2, 2) - 0.55, 0) * 2;
     };
-    var yr = function(x) {
+    var yr = function (x) {
       return Noise.noise(x * 0.01, Math.PI);
     };
 
@@ -3758,7 +3916,7 @@
         if (locmax(i, j, ns, 2)) {
           var xof = i + 2 * (Math.random() - 0.5) * 500;
           var yof = j + 300;
-          var r = { tag: "mount", x: xof, y: yof, h: ns(i, j) };
+          var r = { tag: 'mount', x: xof, y: yof, h: ns(i, j) };
           var res = chadd(r);
           if (res) {
             for (
@@ -3773,7 +3931,7 @@
       }
       if (Math.abs(i) % 1000 < Math.max(1, xstep - 1)) {
         var r = {
-          tag: "distmount",
+          tag: 'distmount',
           x: i,
           y: 280 - Math.random() * 50,
           h: ns(i, j),
@@ -3789,7 +3947,7 @@
         if (Math.random() < 0.01) {
           for (var j = 0; j < 4 * Math.random(); j++) {
             var r = {
-              tag: "flatmount",
+              tag: 'flatmount',
               x: i + 2 * (Math.random() - 0.5) * 700,
               y: 700 - j * 50,
               h: ns(i, j),
@@ -3805,7 +3963,7 @@
 
     for (var i = xmin; i < xmax; i += xstep) {
       if (Math.random() < 0.2) {
-        var r = { tag: "boat", x: i, y: 300 + Math.random() * 390 };
+        var r = { tag: 'boat', x: i, y: 300 + Math.random() * 390 };
         chadd(r, 400);
       }
     }
@@ -3814,7 +3972,7 @@
   }
 
   MEM = {
-    canv: "",
+    canv: '',
     chunks: [],
     xmin: 0,
     xmax: 0,
@@ -3834,7 +3992,7 @@
       //MEM.chunks.push({tag:"?",x:i,y:100,canv:Arch.boat01(i,500)})
       //MEM.chunks.push({tag:"?",x:i,y:100,canv:Arch.transmissionTower01(i,500)})
       MEM.chunks.push({
-        tag: "?",
+        tag: '?',
         x: i,
         y: 100,
         canv: Arch.arch02(i, 500, 0, { sto: 1, rot: Math.random() }),
@@ -3843,9 +4001,9 @@
   }
 
   function chunkloader(xmin, xmax) {
-    var add = function(nch) {
-      if (nch.canv.includes("NaN")) {
-        console.log("gotcha:");
+    var add = function (nch) {
+      if (nch.canv.includes('NaN')) {
+        console.log('gotcha:');
         console.log(nch.tag);
         nch.canv = nch.canv.replace(/NaN/g, -1000);
       }
@@ -3868,13 +4026,13 @@
           }
         }
       }
-      console.log("EH?WTF!");
+      console.log('EH?WTF!');
       console.log(MEM.chunks);
       console.log(nch);
     };
 
     while (xmax > MEM.xmax - MEM.cwid || xmin < MEM.xmin + MEM.cwid) {
-      console.log("generating new chunk...");
+      console.log('generating new chunk...');
 
       var plan;
       if (xmax > MEM.xmax - MEM.cwid) {
@@ -3886,7 +4044,7 @@
       }
 
       for (var i = 0; i < plan.length; i++) {
-        if (plan[i].tag == "mount") {
+        if (plan[i].tag == 'mount') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3900,7 +4058,7 @@
             y: plan[i].y - 10000,
             canv: water(plan[i].x, plan[i].y, i * 2),
           });
-        } else if (plan[i].tag == "flatmount") {
+        } else if (plan[i].tag == 'flatmount') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3913,10 +4071,10 @@
                 wid: 600 + Math.random() * 400,
                 hei: 100,
                 cho: 0.5 + Math.random() * 0.2,
-              },
+              }
             ),
           });
-        } else if (plan[i].tag == "distmount") {
+        } else if (plan[i].tag == 'distmount') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3926,7 +4084,7 @@
               len: randChoice([500, 1000, 1500]),
             }),
           });
-        } else if (plan[i].tag == "boat") {
+        } else if (plan[i].tag == 'boat') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3936,7 +4094,7 @@
               fli: randChoice([true, false]),
             }),
           });
-        } else if (plan[i].tag == "redcirc") {
+        } else if (plan[i].tag == 'redcirc') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3948,7 +4106,7 @@
               plan[i].y +
               "' r='20' stroke='black' fill='red' />",
           });
-        } else if (plan[i].tag == "greencirc") {
+        } else if (plan[i].tag == 'greencirc') {
           add({
             tag: plan[i].tag,
             x: plan[i].x,
@@ -3971,7 +4129,7 @@
   }
 
   function chunkrender(xmin, xmax) {
-    MEM.canv = "";
+    MEM.canv = '';
 
     for (var i = 0; i < MEM.chunks.length; i++) {
       if (
@@ -3983,8 +4141,8 @@
     }
   }
 
-  document.addEventListener("mousemove", onMouseUpdate, false);
-  document.addEventListener("mouseenter", onMouseUpdate, false);
+  document.addEventListener('mousemove', onMouseUpdate, false);
+  document.addEventListener('mouseenter', onMouseUpdate, false);
   mouseX = 0;
   mouseY = 0;
   function onMouseUpdate(e) {
@@ -3994,14 +4152,14 @@
 
   function calcViewBox() {
     var zoom = 1.142;
-    return "" + MEM.cursx + " 0 " + MEM.windx / zoom + " " + MEM.windy / zoom;
+    return '' + MEM.cursx + ' 0 ' + MEM.windx / zoom + ' ' + MEM.windy / zoom;
   }
 
   function viewupdate() {
     try {
-      document.getElementById("SVG").setAttribute("viewBox", calcViewBox());
+      document.getElementById('SVG').setAttribute('viewBox', calcViewBox());
     } catch (e) {
-      console.log("not possible");
+      console.log('not possible');
     }
     //setTimeout(viewupdate,100)
   }
@@ -4020,7 +4178,7 @@
     self.chunkloader(MEM.cursx, MEM.cursx + MEM.windx);
     self.chunkrender(MEM.cursx, MEM.cursx + MEM.windx);
 
-    document.getElementById("BG").innerHTML =
+    document.getElementById('BG').innerHTML =
       "<svg id='SVG' xmlns='http://www.w3.org/2000/svg' width='" +
       MEM.windx +
       "' height='" +
@@ -4034,7 +4192,7 @@
       ",0)'>" +
       MEM.canv +
       //+ "<circle cx='0' cy='0' r='50' stroke='black' fill='red' />"
-      "</g></svg>";
+      '</g></svg>';
 
     //setTimeout(update,1000);
   }
@@ -4042,13 +4200,13 @@
 
 <script id="downloader">
   function download(filename, text) {
-    var element = document.createElement("a");
+    var element = document.createElement('a');
     element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," + encodeURIComponent(text),
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
     );
-    element.setAttribute("download", filename);
-    element.style.display = "none";
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -4065,20 +4223,18 @@
     }
   }
   function autoxcroll(v) {
-    if (document.getElementById("AUTO_SCROLL").checked) {
+    if (document.getElementById('AUTO_SCROLL').checked) {
       xcroll(v);
-      setTimeout(function() {
+      setTimeout(function () {
         autoxcroll(v);
       }, 2000);
     }
   }
   function rstyle(id, b) {
     var a = b ? 0.1 : 0.0;
-    document
-      .getElementById(id)
-      .setAttribute(
-        "style",
-        "\
+    document.getElementById(id).setAttribute(
+      'style',
+      '\
     width: 32px; \
     text-align: center;\
     top: 0px;\
@@ -4086,27 +4242,27 @@
     display:table;\
     cursor: pointer;\
     border: 1px solid rgba(0,0,0,0.4);\
-    background-color:rgba(0,0,0," +
-          a +
-          ");\
-  " +
-          "height:" +
-          MEM.windy +
-          "px"
-      );
-    document.getElementById(id + ".t").setAttribute(
-      "style",
-      "vertical-align:middle; display:table-cell"
+    background-color:rgba(0,0,0,' +
+        a +
+        ');\
+  ' +
+        'height:' +
+        MEM.windy +
+        'px'
+    );
+    document.getElementById(id + '.t').setAttribute(
+      'style',
+      'vertical-align:middle; display:table-cell'
       //"position:absolute; top:"+(MEM.windy/2-20)+"px; left:"+(MEM.windx+20)+"px;"
     );
   }
   function toggleVisible(id) {
-    var v = document.getElementById(id).style.display == "none";
-    document.getElementById(id).style.display = v ? "block" : "none";
+    var v = document.getElementById(id).style.display == 'none';
+    document.getElementById(id).style.display = v ? 'block' : 'none';
   }
   function toggleText(id, a, b) {
     var v = document.getElementById(id).innerHTML;
-    document.getElementById(id).innerHTML = v == "" || v == b ? a : b;
+    document.getElementById(id).innerHTML = v == '' || v == b ? a : b;
   }
   var lastScrollX = 0;
   var pFrame = 0;
@@ -4125,58 +4281,50 @@
     }
   }
   function reloadWSeed(s) {
-    var u = window.location.href.split("?")[0];
-    window.location.href = u + "?seed=" + s;
+    var u = window.location.href.split('?')[0];
+    window.location.href = u + '?seed=' + s;
     //window.location.reload(true)
   }
-  var btnHoverCol = "rgba(0,0,0,0.1)";
+  var btnHoverCol = 'rgba(0,0,0,0.1)';
 </script>
 
-<body style="margin:0">
-  <div
-    id="SETTING"
-    style="
-    position:fixed; 
-    z-index:1000; 
-    left: 40; 
-    top: 3;
-    "
-  >
+<body style="margin: 0">
+  <div id="SETTING" style="position: fixed; z-index: 1000; left: 40; top: 3">
     <div
       id="SET_BTN"
       style="
-      width:32;
-      height:32;
-      color:rgba(0,0,0,0.4);
-      border: 1px solid rgba(0,0,0,0.4);
-      text-align: center;
-      display: table;
-      cursor: pointer;
+        width: 32;
+        height: 32;
+        color: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        text-align: center;
+        display: table;
+        cursor: pointer;
       "
       onmouseover="document.getElementById('SET_BTN').style.backgroundColor=btnHoverCol"
       onmouseout="document.getElementById('SET_BTN').style.backgroundColor='rgba(0,0,0,0)'"
       onclick="toggleVisible('MENU');toggleText('SET_BTN.t','&#x2630;','&#x2715;')"
       title="Settings"
     >
-      <div style="display:table-cell; vertical-align: middle;">
+      <div style="display: table-cell; vertical-align: middle">
         <font id="SET_BTN.t" size="4px"> &#x2630; </font>
       </div>
       <script>
-        window.addEventListener("scroll", function(e) {
-          document.getElementById("SETTING").style.left = Math.max(
+        window.addEventListener('scroll', function (e) {
+          document.getElementById('SETTING').style.left = Math.max(
             4,
             40 - window.scrollX
           );
         });
       </script>
     </div>
-    <div style="height:4px"></div>
+    <div style="height: 4px"></div>
     <div
       id="MENU"
       style="
-      display:none;
-      background-color: rgba(0,0,0,0.1);
-      border: 1px solid rgba(0,0,0,0.4);
+        display: none;
+        background-color: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.4);
       "
     >
       <table>
@@ -4254,28 +4402,29 @@
   <div
     id="SOURCE_BTN"
     style="
-      position:fixed; 
-      z-index:1000; 
-      left: 77; 
+      position: fixed;
+      z-index: 1000;
+      left: 77;
       top: 3;
-      width:32;
-      height:32;
-      color:rgba(0,0,0,0.4);
-      border: 1px solid rgba(0,0,0,0.4);
+      width: 32;
+      height: 32;
+      color: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 0, 0, 0.4);
       text-align: center;
       display: table;
-      cursor: pointer;"
+      cursor: pointer;
+    "
     onmouseover="document.getElementById('SOURCE_BTN').style.backgroundColor=btnHoverCol"
     onmouseout="document.getElementById('SOURCE_BTN').style.backgroundColor='rgba(0,0,0,0)'"
     onclick="window.location='https://github.com/LingDong-/shan-shui-inf';"
     title="Fork me on Github!"
   >
-    <div style="display:table-cell; vertical-align: middle;">
+    <div style="display: table-cell; vertical-align: middle">
       <font id="SET_BTN.t" size="4px"> &lt;/&gt; </font>
     </div>
     <script>
-      window.addEventListener("scroll", function(e) {
-        document.getElementById("SOURCE_BTN").style.left = Math.max(
+      window.addEventListener('scroll', function (e) {
+        document.getElementById('SOURCE_BTN').style.left = Math.max(
           41,
           77 - window.scrollX
         );
@@ -4283,7 +4432,7 @@
     </script>
   </div>
 
-  <table style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+  <table style="border-bottom: 1px solid rgba(0, 0, 0, 0.1)">
     <tr>
       <td>
         <div
@@ -4294,7 +4443,7 @@
         >
           <div id="L.t"><font size="6px">&#x3008;</font></div>
           <script>
-            rstyle("L", false);
+            rstyle('L', false);
           </script>
         </div>
       </td>
@@ -4303,13 +4452,13 @@
         <div id="BG">
           <script>
             MEM.lasttick = new Date().getTime();
-            document.getElementById("INP_SEED").value = SEED;
+            document.getElementById('INP_SEED').value = SEED;
             document
-              .getElementById("BG")
-              .setAttribute("style", "width:" + MEM.windx + "px");
+              .getElementById('BG')
+              .setAttribute('style', 'width:' + MEM.windx + 'px');
             update();
             document.body.scrollTo(0, 0);
-            console.log(["SCROLLX", window.scrollX]);
+            console.log(['SCROLLX', window.scrollX]);
             present();
             //draw();
           </script>
@@ -4325,7 +4474,7 @@
         >
           <div id="R.t"><font size="6px">&#x3009;</font></div>
           <script>
-            rstyle("R", false);
+            rstyle('R', false);
           </script>
         </div>
       </td>
@@ -4335,8 +4484,8 @@
 
 <canvas id="bgcanv" width="512" height="512" hidden> </canvas>
 <script>
-  var canvas = document.getElementById("bgcanv");
-  var ctx = canvas.getContext("2d");
+  var canvas = document.getElementById('bgcanv');
+  var ctx = canvas.getContext('2d');
   var reso = 512;
 
   for (var i = 0; i < reso / 2 + 1; i++) {
@@ -4347,15 +4496,15 @@
       var r = c.toFixed(0);
       var g = (c * 0.95).toFixed(0);
       var b = (c * 0.85).toFixed(0);
-      ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+      ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
       ctx.fillRect(i, j, 1, 1);
       ctx.fillRect(reso - i, j, 1, 1);
       ctx.fillRect(i, reso - j, 1, 1);
       ctx.fillRect(reso - i, reso - j, 1, 1);
     }
   }
-  var img = canvas.toDataURL("image/png");
-  document.getElementById("BG").style.backgroundImage = "url(" + img + ")";
-  document.getElementsByTagName("body")[0].style.backgroundImage =
-    "url(" + img + ")";
+  var img = canvas.toDataURL('image/png');
+  document.getElementById('BG').style.backgroundImage = 'url(' + img + ')';
+  document.getElementsByTagName('body')[0].style.backgroundImage =
+    'url(' + img + ')';
 </script>
